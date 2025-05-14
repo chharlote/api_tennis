@@ -1,0 +1,639 @@
+openapi: 3.0.0
+info:
+  title: API de Tennis
+  description: Cette API permet de gérer les joueurs, les classements, les tournois, les matchs et les statistiques des joueurs de tennis.
+  version: "1.0.0"
+
+
+tags:
+  - name: Players
+    description: Gestion des joueurs
+  - name: Rankings
+    description: Gestion des classements des joueurs
+  - name: Tourneys
+    description: Gestion des tournois de tennis
+  - name: Matches
+    description: Gestion des matchs de tennis
+  - name: Stats
+    description: Gestion des statistiques des joueurs
+
+paths:
+  /players:
+    get:
+      summary: Récupérer tous les joueurs
+      tags:
+        - Players
+      parameters:
+        - name: hand
+          in: query
+          description: "Filtrer par main (L = gauche, R = droite)"
+          required: false
+          schema:
+            type: string
+            enum: [L, R]
+        - name: country
+          in: query
+          description: "Filtrer par pays (code ISO, ex : FRA)"
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Liste des joueurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+        500:
+          description: Erreur interne du serveur
+
+    post:
+      summary: Créer un nouveau joueur
+      tags:
+        - Players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+      responses:
+        201:
+          description: Joueur créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        400:
+          description: Erreur de validation des données
+        409:
+          description: Le joueur existe déjà
+        500:
+          description: Erreur interne du serveur
+
+  /players/{id}:
+    get:
+      summary: Récupérer un joueur par son ID
+      tags:
+        - Players
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du joueur
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Détails du joueur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        404:
+          description: Joueur non trouvé
+        500:
+          description: Erreur interne du serveur
+
+    patch:
+      summary: Mettre à jour un joueur existant
+      tags:
+        - Players
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du joueur
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+      responses:
+        200:
+          description: Joueur mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        400:
+          description: Erreur de validation des données
+        404:
+          description: Joueur non trouvé
+        500:
+          description: Erreur interne du serveur
+
+    delete:
+      summary: Supprimer un joueur
+      tags:
+        - Players
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du joueur
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Joueur supprimé avec succès
+        404:
+          description: Joueur non trouvé
+        500:
+          description: Erreur interne du serveur
+
+  /rankings:
+    get:
+      summary: Récupérer tous les classements des joueurs
+      tags:
+        - Rankings
+      responses:
+        200:
+          description: Liste des classements des joueurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ranking'
+
+    post:
+      summary: Créer un classement pour un joueur
+      tags:
+        - Rankings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ranking'
+      responses:
+        201:
+          description: Classement créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ranking'
+        400:
+          description: Erreur de validation des données
+        409:
+          description: Classement déjà existant
+        500:
+          description: Erreur interne du serveur
+
+    patch:
+      summary: Mettre à jour un classement
+      tags:
+        - Rankings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du classement
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ranking'
+      responses:
+        200:
+          description: Classement mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ranking'
+        400:
+          description: Erreur de validation des données
+        404:
+          description: Classement non trouvé
+        500:
+          description: Erreur interne du serveur
+
+    delete:
+      summary: Supprimer un classement
+      tags:
+        - Rankings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du classement
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Classement supprimé avec succès
+        404:
+          description: Classement non trouvé
+        500:
+          description: Erreur interne du serveur
+
+  /tourneys:
+    get:
+      summary: Récupérer tous les tournois
+      tags:
+        - Tourneys
+      responses:
+        200:
+          description: Liste des tournois
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tourney'
+
+    post:
+      summary: Créer un nouveau tournoi
+      tags:
+        - Tourneys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tourney'
+      responses:
+        201:
+          description: Tournoi créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tourney'
+        400:
+          description: Erreur de validation des données
+        500:
+          description: Erreur interne du serveur
+
+  /tourneys/{id}:
+    get:
+      summary: Récupérer un tournoi par son ID
+      tags:
+        - Tourneys
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du tournoi
+          schema:
+            type: string
+      responses:
+        200:
+          description: Détails du tournoi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tourney'
+        404:
+          description: Tournoi non trouvé
+        500:
+          description: Erreur interne du serveur
+
+    patch:
+      summary: Mettre à jour un tournoi existant
+      tags:
+        - Tourneys
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du tournoi
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tourney'
+      responses:
+        200:
+          description: Tournoi mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tourney'
+        400:
+          description: Erreur de validation des données
+        404:
+          description: Tournoi non trouvé
+        500:
+          description: Erreur interne du serveur
+
+    delete:
+      summary: Supprimer un tournoi
+      tags:
+        - Tourneys
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du tournoi
+          schema:
+            type: string
+      responses:
+        204:
+          description: Tournoi supprimé avec succès
+        404:
+          description: Tournoi non trouvé
+        500:
+          description: Erreur interne du serveur
+
+  /matches:
+    get:
+      summary: Récupérer tous les matchs
+      tags:
+        - Matches
+      parameters:
+        - name: tourney_id
+          in: query
+          description: "Filtrer par identifiant du tournoi (ex : 2003-D035)"
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Liste des matchs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Match'
+        500:
+          description: Erreur interne du serveur
+
+
+    post:
+      summary: Créer un nouveau match
+      tags:
+        - Matches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Match'
+      responses:
+        201:
+          description: Match créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        400:
+          description: Erreur de validation des données
+        500:
+          description: Erreur interne du serveur
+
+  /matches/{id}:
+    get:
+      summary: Récupérer un match par son ID
+      tags:
+        - Matches
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du match
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Détails du match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        404:
+          description: Match non trouvé
+        500:
+          description: Erreur interne du serveur
+
+    patch:
+      summary: Mettre à jour un match existant
+      tags:
+        - Matches
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du match
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Match'
+      responses:
+        200:
+          description: Match mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        400:
+          description: Erreur de validation des données
+        404:
+          description: Match non trouvé
+        500:
+          description: Erreur interne du serveur
+
+    delete:
+      summary: Supprimer un match
+      tags:
+        - Matches
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du match
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Match supprimé avec succès
+        404:
+          description: Match non trouvé
+        500:
+          description: Erreur interne du serveur
+
+  /statPlayers:
+    get:
+      summary: Récupérer toutes les statistiques des joueurs
+      tags:
+        - Stats
+      responses:
+        200:
+          description: Liste des statistiques des joueurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StatPlayer'
+
+  /statPlayers/{id}:
+    get:
+      summary: Récupérer les statistiques d'un joueur par son ID
+      tags:
+        - Stats
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du joueur
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Détails des statistiques du joueur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatPlayer'
+
+components:
+  schemas:
+    Player:
+      type: object
+      properties:
+        idPlayer:
+          type: integer
+          example: 100002
+        firstName:
+          type: string
+          example: "Pancho"
+        lastName:
+          type: string
+          example: "Segura"
+        hand:
+          type: string
+          example: "R"
+        countryCode:
+          type: string
+          example: "ECU"
+      required:
+        - firstName
+        - lastName
+        - hand
+        - countryCode
+
+    Ranking:
+      type: object
+      properties:
+        idPlayer:
+          type: integer
+          example: 104925
+        rankingDate:
+          type: string
+          format: date
+          example: "2024-05-27"
+        points:
+          type: integer
+          example: 9960
+      required:
+        - idPlayer
+        - rankingDate
+        - points
+
+    Tourney:
+      type: object
+      properties:
+        idTourney:
+          type: string
+          example: "2014-D018"
+        tourneyName:
+          type: string
+          example: "Davis Cup WG PO: ISR vs ARG"
+        tourneyLevel:
+          type: string
+          example: "D"
+        tourneyDate:
+          type: string
+          format: date
+          example: "2014-09-12"
+        drawSize:
+          type: integer
+          example: 4
+        surface:
+          type: string
+          example: "Hard"
+      required:
+        - tourneyName
+        - tourneyLevel
+        - tourneyDate
+        - drawSize
+        - surface
+
+    Match:
+      type: object
+      properties:
+        matchNum:
+          type: integer
+          example: 270
+        score:
+          type: string
+          example: "6-1 7-5"
+        tourneyId:
+          type: string
+          example: "1968-2029"
+        winnerId:
+          type: integer
+          example: 112411
+        loserId:
+          type: integer
+          example: 110196
+      required:
+        - score
+        - tourneyId
+        - winnerId
+        - loserId
+
+    StatPlayer:
+      type: object
+      properties:
+        idPlayer:
+          type: integer
+          example: 100644
+        matchesPlayed:
+          type: integer
+          example: 610
+        matchesWon:
+          type: integer
+          example: 423
+        matchesLost:
+          type: integer
+          example: 187
+        winRate:
+          type: number
+          format: float
+          example: 0.69
+        totalGames:
+          type: integer
+          example: 610
+        hand:
+          type: string
+          example: "R"
+        height:
+          type: integer
+          example: 198
+        points:
+          type: integer
+          example: 6305
+        forme:
+          type: string
+          example: "Bonne"
+      required:
+        - idPlayer
+        - matchesPlayed
+        - matchesWon
+        - matchesLost
+        - winRate
+        - totalGames
+        - hand
+        - height
+        - points
+        - forme
